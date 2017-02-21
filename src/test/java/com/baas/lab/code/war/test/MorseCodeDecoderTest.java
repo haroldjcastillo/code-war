@@ -11,6 +11,6 @@ public class MorseCodeDecoderTest {
 
     @Test
     public void testExampleFromDescription() {
-      assertThat(MorseCodeDecoder.decode2(".... . -.--   .--- ..- -.. ."), is("HEY JUDE"));
+      assertThat(MorseCodeDecoder.decode(".... . -.--   .--- ..- -.. ."), is("HEY JUDE"));
     }
 }
