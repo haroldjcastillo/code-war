@@ -8,8 +8,9 @@ import org.junit.Test;
 import com.baas.lab.code.war.kata.MorseCodeDecoder;
 
 public class MorseCodeDecoderTest {
+
     @Test
     public void testExampleFromDescription() {
-      assertThat(MorseCodeDecoder.decode(".... . -.--   .--- ..- -.. ."), is("HEY JUDE"));
+      assertThat(MorseCodeDecoder.decode2(".... . -.--   .--- ..- -.. ."), is("HEY JUDE"));
     }
 }
