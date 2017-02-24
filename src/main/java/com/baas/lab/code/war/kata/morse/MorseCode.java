@@ -1,4 +1,4 @@
-package com.baas.lab.code.war.kata;
+package com.baas.lab.code.war.kata.morse;
 
 import java.util.HashMap;
 import java.util.Map;
