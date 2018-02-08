@@ -5,7 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import com.baas.lab.code.war.kata.MorseCodeDecoder;
+import com.baas.lab.code.war.kata.morse.MorseCodeDecoder;
 
 public class MorseCodeDecoderTest {
 

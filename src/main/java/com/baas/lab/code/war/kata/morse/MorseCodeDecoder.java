@@ -1,4 +1,4 @@
-package com.baas.lab.code.war.kata;
+package com.baas.lab.code.war.kata.morse;
 
 public class MorseCodeDecoder {
 	
@@ -9,7 +9,6 @@ public class MorseCodeDecoder {
 		final char[] morseCodeArray = morseCode.toCharArray();
 		final StringBuilder phrase = new StringBuilder();
 		final StringBuilder code = new StringBuilder();
-		char prevMorseCode = '\u0000';
 
 		for (int i = 0; i < morseCodeArray.length; i++) {
 
@@ -25,7 +24,6 @@ public class MorseCodeDecoder {
 			}
 
 			code.append(morseCodeArray[i]);
-			prevMorseCode = morseCodeArray[i];
 		}
 
 		return phrase.toString();
