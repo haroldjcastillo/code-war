@@ -15,7 +15,7 @@ def answer(area):
 		area = area - r
 		ans.append(r)
 
-		return ans
+	return ans
 
 
 print(answer(inv))
