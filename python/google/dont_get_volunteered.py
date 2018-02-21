@@ -49,10 +49,12 @@ def get_childs(i):
 
     return v
 
+
 branches = []
 
-for i in range(1, 64):
-    branches.append(get_childs(i))
-
+for i in range(0, 64):
+    branch = get_childs(i)
+    branches.append(branch)
+    print i, branch
 
 # print(get_postion(2))
