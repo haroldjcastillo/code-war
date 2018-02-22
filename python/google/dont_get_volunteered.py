@@ -1,12 +1,23 @@
-import numpy
-import numpy as np
-import matplotlib.pyplot as plt
+c = 0
+board = [[0] * 8 for u in range(8)]
+for x in range(0, 8):
+    for y in range(0, 8):
+        board[x][y] = c
+        c += 1
 
-board = numpy.arange(64).reshape((8, 8))
-print(board)
+am = [[float('inf')] * 64 for q in range(64)]
 
-am = np.zeros((64, 64))
-print(am.shape)
+
+def answer(src, dest):
+    if src == dest:
+        return 1
+
+    for i in range(0, 64):
+        add_adjacency_matrix(i)
+    floyd_warshall()
+
+    return am[src][dest]
+
 
 def get_postion(pos):
     r = pos / 8
@@ -14,10 +25,8 @@ def get_postion(pos):
     return r, c
 
 
-def get_childs(i):
-    v = []
+def add_adjacency_matrix(i):
     r, c = get_postion(i)
-
     dr2 = r + 2
     ur2 = r - 2
     lc1 = c - 1
@@ -28,43 +37,39 @@ def get_childs(i):
     rc2 = c + 2
 
     if ur2 >= 0 and lc1 >= 0:
-        v.append(board[ur2][lc1])
         am[i][board[ur2][lc1]] = 1
     if ur2 >= 0 and rc1 <= 7:
-        v.append(board[ur2][rc1])
         am[i][board[ur2][rc1]] = 1
     if ur1 >= 0 and lc2 >= 0:
-        v.append(board[ur1][lc2])
         am[i][board[ur1][lc2]] = 1
     if ur1 >= 0 and rc2 <= 7:
-        v.append(board[ur1][rc2])
         am[i][board[ur1][rc2]] = 1
     if dr1 <= 7 and lc2 >= 0:
-        v.append(board[dr1][lc2])
         am[i][board[dr1][lc2]] = 1
     if dr1 <= 7 and rc2 <= 7:
-        v.append(board[dr1][rc2])
         am[i][board[dr1][rc2]] = 1
     if dr2 <= 7 and lc1 >= 0:
-        v.append(board[dr2][lc1])
         am[i][board[dr2][lc1]] = 1
     if dr2 <= 7 and rc1 <= 7:
-        v.append(board[dr2][rc1])
         am[i][board[dr2][rc1]] = 1
-    return v
 
 
-branches = []
+def floyd_warshall():
+    for k in range(0, 64):
+        for i in range(0, 64):
+            for j in range(0, 64):
+                if am[i][k] + am[k][j] < am[i][j]:
+                    am[i][j] = am[i][k] + am[k][j]
 
-for i in range(0, 64):
-    branch = get_childs(i)
-    branches.append(branch)
-    """for j in range(len(branch)):
-        plt.plot(i, branch[j], 'ro')"""
-    # print i, branch
 
-# print am
-# print(get_postion(2))
+print get_postion(28)
+print get_postion(55)
 
-# plt.axis([0, 63, 0, 63])
-# plt.show()
+print 0, 0, answer(0, 0)
+print 0, 1, answer(0, 1)
+print 19, 36, answer(19, 36)
+print 6, 44, answer(6, 44)
+print 0, 63, answer(0, 63)
+print 0, 32, answer(0, 32)
+print 56, 7, answer(56, 7)
+print 56, 56, answer(56, 56)
