@@ -216,7 +216,6 @@ def to_lcm(p):
 
 
 def answer(m):
-    # if len(m) == len(m[0]):
     m, sc = sort(m)
     if sc != 0:
         n = normalize(m)
@@ -228,7 +227,6 @@ def answer(m):
         return b
     elif len(m) == 1 and m[0][0] == 0:
         return [1, 1]
-    # return [0 for r in range(len(m))]
 
 
 mx = [[0]]
