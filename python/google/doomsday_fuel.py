@@ -6,7 +6,7 @@ def swap(m, i, j):
     s = len(m)
 
     if s != len(m[0]):
-        raise Exception("It's non-square matrix")
+        raise Exception("It's non-square matrix.")
     if i == j:
         return m
 
@@ -29,19 +29,20 @@ def swap(m, i, j):
 
 
 def sort(m):
-    size = len(m)
     j = -1
-    for r in range(size):
+    sc = 0
+    for r in range(len(m)):
         s = sum(m[r])
         if s == 0:
             j = r
-        elif s != 0 and j > -1:
+        if s != 0 and j > -1:
             n = swap(m, r, j)
             return sort(n)
-    return m
+        sc += s
+    return m, sc
 
 
-def normalize(m, use_fractions=False):
+def normalize(m):
     n = []
     for r in range(len(m)):
         cols = len(m[r])
@@ -51,17 +52,14 @@ def normalize(m, use_fractions=False):
             rw = m[r]
         else:
             for c in range(cols):
-                if use_fractions:
-                    rw.append(Fraction(m[r][c], s))
-                else:
-                    rw.append(float(m[r][c]) / s)
+                rw.append(Fraction(m[r][c], s))
         n.append(rw)
     return n
 
 
 def get_absorbing_states_count(m):
     if len(m) == 0:
-        raise Exception("Empty matrix")
+        raise Exception("Empty matrix.")
 
     for r in range(len(m)):
         for c in range(len(m[r])):
@@ -69,7 +67,7 @@ def get_absorbing_states_count(m):
                 break
         else:
             return r
-    raise Exception("Invalid matrix")
+    raise Exception("Invalid matrix.")
 
 
 def get_transitions(m):
@@ -85,7 +83,7 @@ def get_transitions(m):
             tq.append(m[r][c])
         q.append(tq)
     if q is None:
-        raise Exception("Invalid matrix")
+        raise Exception("Invalid matrix.")
 
     r = []
     for i in range(t):
@@ -94,7 +92,7 @@ def get_transitions(m):
             tr.append(m[i][j])
         r.append(tr)
     if r is None:
-        raise Exception("Invalid matrix")
+        raise Exception("Invalid matrix.")
     return q, r
 
 
@@ -110,10 +108,10 @@ def identity(s):
 
 def subtract(i, q):
     if len(i) != len(i[0]) or len(q) != len(q[0]):
-        raise Exception("non-square matrices")
+        raise Exception("It's non-square amtrix.")
 
     if len(i) != len(q) or len(i[0]) != len(q[0]):
-        raise Exception("Cannot subtract matrices of different sizes")
+        raise Exception("Cannot subtract matrices of different sizes.")
 
     s = []
     for r in range(len(i)):
@@ -129,27 +127,25 @@ def minor(m, i, j):
 
 
 def determinant(m):
-    # base case for 2x2 matrix
     if len(m) == 2:
         return m[0][0] * m[1][1] - m[0][1] * m[1][0]
 
     d = 0
     for c in range(len(m)):
         d += ((-1) ** c) * m[0][c] * determinant(minor(m, 0, c))
-
     return d
 
 
 def transpose(m):
     t = []
     for r in range(len(m)):
-        tRow = []
+        rw = []
         for c in range(len(m[r])):
             if c == r:
-                tRow.append(m[r][c])
+                rw.append(m[r][c])
             else:
-                tRow.append(m[c][r])
-        t.append(tRow)
+                rw.append(m[c][r])
+        t.append(rw)
     return t
 
 
@@ -157,18 +153,17 @@ def inverse(m):
     d = determinant(m)
 
     if d == 0:
-        raise Exception("Invalid matrix determinant")
+        raise Exception("Invalid matrix determinant.")
 
     if len(m) == 2:
-        return [[m[1][1] / d, -1 * m[0][1] / d],
-                [-1 * m[1][0] / d, m[0][0] / d]]
+        return [[m[1][1] / d, -1 * m[0][1] / d], [-1 * m[1][0] / d, m[0][0] / d]]
 
     cfs = []
     for r in range(len(m)):
         cr = []
         for c in range(len(m)):
-            minor = minor(m, r, c)
-            cr.append(((-1) ** (r + c)) * determinant(minor))
+            mn = minor(m, r, c)
+            cr.append(((-1) ** (r + c)) * determinant(mn))
         cfs.append(cr)
     cfs = transpose(cfs)
     for r in range(len(cfs)):
@@ -179,10 +174,10 @@ def inverse(m):
 
 def multiply(a, b):
     if a == [] or b == []:
-        raise Exception("Empty matrix")
+        raise Exception("Empty matrix.")
 
     if len(a[0]) != len(b):
-        raise Exception("Invalid size matrix")
+        raise Exception("Invalid size matrix.")
 
     m = []
     for r in range(len(a)):
@@ -209,34 +204,67 @@ def get_common(a, b):
 
 
 def to_lcm(p):
-    ret = []
-
+    frc = []
     c = reduce(lambda x, y: get_common(x, y), [f.denominator for f in p])
     for f in p:
         if f.denominator != c:
-            ret.append(Fraction(c / f.denominator * f.numerator, c))
+            frc.append(c / f.denominator * f.numerator)
         else:
-            ret.append(Fraction(f.numerator, c))
-    return ret
+            frc.append(f.numerator)
+    frc.append(c)
+    return frc
 
 
 def answer(m):
-    m = sort(m)
-    n = normalize(m, use_fractions=True)
-    (q, r) = get_transitions(n)
-    i = identity(len(q))
-    s = subtract(i, q)
-    v = inverse(s)
-    b = to_lcm(multiply(v, r)[0])
+    # if len(m) == len(m[0]):
+    m, sc = sort(m)
+    if sc != 0:
+        n = normalize(m)
+        (q, r) = get_transitions(n)
+        i = identity(len(q))
+        s = subtract(i, q)
+        v = inverse(s)
+        b = to_lcm(multiply(v, r)[0])
+        return b
+    elif len(m) == 1 and m[0][0] == 0:
+        return [1, 1]
+    # return [0 for r in range(len(m))]
 
-    return b
 
+mx = [[0]]
+print answer(mx)
 
-mx = [[0, 1, 0, 0, 0, 1],  # s0
-      [4, 0, 0, 3, 2, 0],  # s1
-      [0, 0, 0, 0, 0, 0],  # s2
-      [0, 0, 0, 0, 0, 0],  # s3
-      [0, 0, 0, 0, 0, 0],  # s4
-      [0, 0, 0, 0, 0, 0]]  # s5
+mx = [[0, 2, 1, 0, 0], [0, 0, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+print answer(mx)
 
+mx = [[0, 1, 0, 0, 0, 1], [4, 0, 0, 3, 2, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]]
+print answer(mx)
+
+mx = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]]
+print answer(mx)
+
+mx = [[0, 0, 0, 0, 3, 5, 0, 0, 0, 2],
+      [0, 0, 4, 0, 0, 0, 1, 0, 0, 0],
+      [0, 0, 0, 4, 4, 0, 0, 0, 1, 1],
+      [13, 0, 0, 0, 0, 0, 2, 0, 0, 0],
+      [0, 1, 8, 7, 0, 0, 0, 1, 3, 0],
+      [1, 7, 0, 0, 0, 0, 0, 2, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+print answer(mx)
+
+mx = [[0, 86, 61, 189, 0, 18, 12, 33, 66, 39],
+      [0, 0, 2, 0, 0, 1, 0, 0, 0, 0],
+      [15, 187, 0, 0, 18, 23, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 print answer(mx)
